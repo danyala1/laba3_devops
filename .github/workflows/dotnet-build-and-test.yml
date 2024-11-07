@@ -1,10 +1,13 @@
-name: .net build & test
+# This workflow will build a .NET project
+# For more information see: https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-net
+
+name: .NET build & test
 
 on:
   push:
-    branches: [ "master" ]
+    branches: [ "main" ]
   pull_request:
-    branches: [ "master" ]
+    branches: [ "main" ]
   workflow_call:
 
 jobs:
@@ -14,15 +17,20 @@ jobs:
 
     steps:
     - uses: actions/checkout@v3
+    
     - name: Setup .NET
       uses: actions/setup-dotnet@v3
       with:
         dotnet-version: 8.0.x
-    - name: Restore dependencies
-      run: dotnet restore
+
+    - name: Restore dependencies for solution
+      run: dotnet restore TestServer/TestServer.sln
+
     - name: Build TestServer
-      run: dotnet build --no-restore TestServer
+      run: dotnet build --no-restore TestServer/TestServer.csproj
+
     - name: Build TestServerTests
-      run: dotnet build --no-restore TestServerTests
-    - name: Test
-      run: dotnet test --no-build --verbosity normal
+      run: dotnet build --no-restore TestServerTests/TestServerTests.csproj
+
+    - name: Run tests
+      run: dotnet test --no-build --verbosity normal TestServerTests/TestServerTests.csproj
